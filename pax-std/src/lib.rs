@@ -12,6 +12,7 @@ pub mod primitives {
     use pax_runtime_api::Size;
     use pax_runtime_api::StringBox;
 
+    use crate::types::checkbox::CheckboxStyle;
     use crate::types::text::TextStyle;
     use crate::types::PathSegment;
 
@@ -73,8 +74,8 @@ pub mod primitives {
     #[custom(Imports)]
     #[primitive("pax_std_primitives::checkbox::CheckboxInstance")]
     pub struct Checkbox {
-        pub checked: pax_lang::Property<bool>
-        //pub style: pax_lang::Property<TextStyle>,
+        pub checked: pax_lang::Property<bool>,
+        pub style: pax_lang::Property<CheckboxStyle>,
     }
 
     #[derive(Pax)]

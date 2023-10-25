@@ -1,5 +1,7 @@
 // @ts-ignore
 
+import { ColorGroup } from "./types";
+
 
 export function getStringIdFromClippingId(prefix: string, id_chain: number[]) {
     return prefix + "_" + id_chain.join("_");
@@ -114,3 +116,26 @@ export function generateLocationId(scrollerId: number[] | undefined, zIndex: num
 export function arrayToKey(arr: number[]): string {
     return arr.join(',');
 }
+
+export function toCssColor(color: ColorGroup): string {
+    let newValue = "";
+    if (color.Rgba != null) {
+        let p = color.Rgba;
+        newValue = `rgba(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
+    } else if (color.Hsla != null) {
+        let p = color.Hsla;
+        newValue = `hsla(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
+    } else if (color.Rgb != null) {
+        let p = color.Rgb;
+        newValue = `rgb(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
+    } else if (color.Hsl != null) {
+        let p = color.Hsl;
+        newValue = `hsl(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
+    } else {
+        throw new TypeError("Unsupported Color Format");
+    }
+    return newValue;
+}
+
+
+

@@ -11,7 +11,7 @@ import {ImageLoadPatch} from "./messages/image-load-patch";
 import {OcclusionContext} from "./occlusion-context";
 import {ObjectManager} from "../pools/object-manager";
 import {DIV, OBJECT, OCCLUSION_CONTEXT, SCROLLER} from "../pools/supported-objects";
-import {arrayToKey, packAffineCoeffsIntoMatrix3DString, readImageToByteBuffer} from "../utils/helpers";
+import {arrayToKey, packAffineCoeffsIntoMatrix3DString, readImageToByteBuffer, toCssColor} from "../utils/helpers";
 import {getAlignItems, getJustifyContent, getTextAlign} from "./text";
 import type {PaxChassisWeb} from "../types/pax-chassis-web";
 import { CheckboxUpdatePatch } from "./messages/checkbox-update-patch";
@@ -131,16 +131,21 @@ export class NativeElementPool {
 
     }
 
-    
     checkboxUpdate(patch: CheckboxUpdatePatch) {
         //@ts-ignore
         window.textNodes = this.textNodes;
         // @ts-ignore
         let leaf = this.textNodes[patch.id_chain];
+
         console.assert(leaf !== undefined);
         let checkbox = leaf.firstChild;
-        if (patch.checked !== null) {
+        if (patch.checked != null) {
             checkbox.checked = patch.checked;
+        }
+
+        if (patch.style != null) {
+            checkbox.style.backgroundColor = toCssColor(patch.style.background);
+            checkbox.style.borderColor = toCssColor(patch.style.border);
         }
         // Handle size_x and size_y
         if (patch.size_x != null) {
@@ -209,23 +214,7 @@ export class NativeElementPool {
                 style.font.applyFontToDiv(leaf);
             }
             if (style.fill) {
-                let newValue = "";
-                if (style.fill.Rgba != null) {
-                    let p = style.fill.Rgba;
-                    newValue = `rgba(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-                } else if (style.fill.Hsla != null) {
-                    let p = style.fill.Hsla;
-                    newValue = `hsla(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-                } else if (style.fill.Rgb != null) {
-                    let p = style.fill.Rgb;
-                    newValue = `rgb(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
-                } else if (style.fill.Hsl != null) {
-                    let p = style.fill.Hsl;
-                    newValue = `hsl(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
-                } else {
-                    throw new TypeError("Unsupported Color Format");
-                }        
-                textChild.style.color = newValue;
+                textChild.style.color = toCssColor(style.fill);
             }
             if (style.font_size) {
                 textChild.style.fontSize = style.font_size + "px";
@@ -259,15 +248,7 @@ export class NativeElementPool {
                         linkStyle.font.applyFontToDiv(link);
                     }
                     if (linkStyle.fill) {
-                        let newValue = "";
-                        if(linkStyle.fill.Rgba != null) {
-                            let p = linkStyle.fill.Rgba;
-                            newValue = `rgba(${p[0]! * 255.0},${p[1]! * 255.0},${p[2]! * 255.0},${p[3]! * 255.0})`;
-                        } else {
-                            let p = linkStyle.fill.Hsla!;
-                            newValue = `hsla(${p[0]! * 255.0},${p[1]! * 255.0},${p[2]! * 255.0},${p[3]! * 255.0})`;
-                        }
-                        link.style.color = newValue;
+                        link.style.color = toCssColor(linkStyle.fill);
                     }
 
                     if (linkStyle.align_horizontal) {

@@ -1,5 +1,6 @@
 import {ObjectManager} from "../pools/object-manager";
 import {FONT} from "../pools/supported-objects";
+import { ColorGroup } from "../utils/types";
 
 enum FontStyle {
     Normal,
@@ -245,9 +246,4 @@ export function getAlignItems(verticalAlignment: string): string {
     }
 }
 
-class ColorGroup {
-    Hsla?: number[];
-    Rgba?: number[];
-    Rgb?: number[];
-    Hsl?: number[];
-}
+

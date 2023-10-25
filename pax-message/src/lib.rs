@@ -288,14 +288,18 @@ pub struct CheckboxPatch {
     pub transform: Option<Vec<f64>>,
     pub size_x: Option<f64>,
     pub size_y: Option<f64>,
-    //pub style: Option<TextStyleMessage>,
     pub checked: Option<bool>,
+    pub style: Option<CheckboxStyleMessage>,
 }
 
-#[derive(Default, Serialize)]
+#[derive(PartialEq, Default, Serialize)]
 #[repr(C)]
 pub struct CheckboxStyleMessage {
-    //pub fill: Option<ColorVariantMessage>,
+    pub background: Option<ColorVariantMessage>,
+    pub color: Option<ColorVariantMessage>,
+    pub border: Option<ColorVariantMessage>,
+    //later? (desktop specific)
+    //pub corner_radii: Option<crate::CornerRadii>
 }
 
 #[derive(Default, Serialize)]
@@ -329,7 +333,7 @@ pub struct ImagePatch {
     pub path: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(PartialEq, Serialize)]
 #[repr(C)]
 pub enum ColorVariantMessage {
     Hlca([f64; 4]),

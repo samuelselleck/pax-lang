@@ -232,6 +232,25 @@ var Pax = (() => {
   function arrayToKey(arr) {
     return arr.join(",");
   }
+  function toCssColor(color) {
+    let newValue = "";
+    if (color.Rgba != null) {
+      let p = color.Rgba;
+      newValue = `rgba(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
+    } else if (color.Hsla != null) {
+      let p = color.Hsla;
+      newValue = `hsla(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
+    } else if (color.Rgb != null) {
+      let p = color.Rgb;
+      newValue = `rgb(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
+    } else if (color.Hsl != null) {
+      let p = color.Hsl;
+      newValue = `hsl(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
+    } else {
+      throw new TypeError("Unsupported Color Format");
+    }
+    return newValue;
+  }
 
   // src/classes/layer.ts
   var Layer = class {
@@ -705,8 +724,13 @@ var Pax = (() => {
       let leaf = this.textNodes[patch.id_chain];
       console.assert(leaf !== void 0);
       let checkbox = leaf.firstChild;
-      if (patch.checked !== null) {
+      if (patch.checked != null) {
         checkbox.checked = patch.checked;
+      }
+      if (patch.style != null) {
+        console.log("yay style is applied");
+        checkbox.style.backgroundColor = toCssColor(patch.style.background);
+        checkbox.style.borderColor = toCssColor(patch.style.border);
       }
       if (patch.size_x != null) {
         leaf.style.width = patch.size_x + "px";
@@ -765,23 +789,7 @@ var Pax = (() => {
           style.font.applyFontToDiv(leaf);
         }
         if (style.fill) {
-          let newValue = "";
-          if (style.fill.Rgba != null) {
-            let p = style.fill.Rgba;
-            newValue = `rgba(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-          } else if (style.fill.Hsla != null) {
-            let p = style.fill.Hsla;
-            newValue = `hsla(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-          } else if (style.fill.Rgb != null) {
-            let p = style.fill.Rgb;
-            newValue = `rgb(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
-          } else if (style.fill.Hsl != null) {
-            let p = style.fill.Hsl;
-            newValue = `hsl(${p[0] * 255},${p[1] * 255},${p[2] * 255})`;
-          } else {
-            throw new TypeError("Unsupported Color Format");
-          }
-          textChild.style.color = newValue;
+          textChild.style.color = toCssColor(style.fill);
         }
         if (style.font_size) {
           textChild.style.fontSize = style.font_size + "px";
@@ -810,15 +818,7 @@ var Pax = (() => {
               linkStyle.font.applyFontToDiv(link);
             }
             if (linkStyle.fill) {
-              let newValue = "";
-              if (linkStyle.fill.Rgba != null) {
-                let p = linkStyle.fill.Rgba;
-                newValue = `rgba(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-              } else {
-                let p = linkStyle.fill.Hsla;
-                newValue = `hsla(${p[0] * 255},${p[1] * 255},${p[2] * 255},${p[3] * 255})`;
-              }
-              link.style.color = newValue;
+              link.style.color = toCssColor(linkStyle.fill);
             }
             if (linkStyle.align_horizontal) {
               leaf.style.display = "flex";
@@ -1141,6 +1141,14 @@ var Pax = (() => {
       this.size_y = jsonMessage["size_y"];
       this.transform = jsonMessage["transform"];
       this.checked = jsonMessage["checked"];
+      let style_parts = jsonMessage["style"];
+      if (style_parts != void 0) {
+        this.style = {
+          border: style_parts["border"],
+          background: style_parts["background"],
+          color: style_parts["color"]
+        };
+      }
     }
     cleanUp() {
       this.id_chain = [];
@@ -1148,6 +1156,7 @@ var Pax = (() => {
       this.size_y = 0;
       this.transform = [];
       this.checked = void 0;
+      this.style = void 0;
     }
   };
 

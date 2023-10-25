@@ -1,4 +1,5 @@
 pub mod text;
+pub mod checkbox;
 
 use crate::primitives::Path;
 use kurbo::{Point, RoundedRectRadii};

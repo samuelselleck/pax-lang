@@ -89,7 +89,8 @@ impl<R: 'static + RenderContext> RenderNode<R> for CheckboxInstance<R> {
             crate::patch_if_needed(&mut old_state.checked, &mut patch.checked, *properties.checked.get()) ||
             crate::patch_if_needed(&mut old_state.size_x, &mut patch.size_x, computed_size.0) ||
             crate::patch_if_needed(&mut old_state.size_y, &mut patch.size_y, computed_size.1) ||
-            crate::patch_if_needed(&mut old_state.transform, &mut patch.transform, transform_coeffs);
+            crate::patch_if_needed(&mut old_state.transform, &mut patch.transform, transform_coeffs) ||
+            crate::patch_if_needed(&mut old_state.style, &mut patch.style, properties.style.get().clone());
         if update_needed {
             (*rtc.engine.runtime)
                 .borrow_mut()
